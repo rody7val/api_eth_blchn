@@ -1,10 +1,12 @@
 const shortid = require('short-id')
-const IPFS =require('ipfs-api');
-const ipfs = IPFS({ host: 'ipfs.infura.io',
-    port: 5001,protocol: 'https' });
+const IPFS = require('ipfs-api');
+const ipfs = IPFS({
+  host: 'ipfs.infura.io',
+  port: 5001,protocol: 'https'
+});
 
 function routes(app, dbe, lms, accounts){
-    let db= dbe.collection('music-users')
+    let db = dbe.collection('music-users')
     let music = dbe.collection('music-store')
     app.post('/register', (req,res)=>{
         let email = req.body.email
@@ -22,7 +24,6 @@ function routes(app, dbe, lms, accounts){
             res.status(400).json({"status":"Failed", "reason":"wrong input"})
         }
     })
-
     app.post('/login', (req,res)=>{
         let email = req.body.email
         if(email){

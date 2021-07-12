@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vue.js Decentralised Application</title>
+  <link
+    rel='stylesheet'
+    href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css'
+  >
+  <script src='https://cdn.jsdelivr.net/npm/vue'></script>
+  <script src='https://unpkg.com/vue-router'></script>
+  <script src='https://unpkg.com/vuex@3.6.2/dist/vuex.js'></script>
+  <script src='utils.js'></script>
+</head>
+<body>
+  <div id='app' class='container' style='margin-top: 20px; max-width: 600px;'>
+  	<!--
+      {{$store.state.count}}
+      <button @click='$store.commit("increment")'>add</button>
+    -->
+    <nav class='navbar navbar-expand navbar-light' style='background-color: #7bd8ff;'>
+      <ul class='navbar-nav mr-auto mt-2 mt-lg-0'>
+        <li v-for='(link, key) in navLinks'>
+          <router-link class='nav-link' :to='link.to' :key='key'>
+            {{link.label}}
+          </router-link>
+        </li>
+      </ul>
+
+        <ul class='navbar-nav ml-auto mt-2 mt-lg-0'>
+          <li v-for='(link, key) in userLinks'>
+            <router-link class='nav-link' :to='link.to' :key='key'>
+              {{link.label}}
+            </router-link>
+          </li>
+        </ul>
+    </nav>
+  
+    <div class='text-center' style='margin-top: 20px;'>
+      <router-view></router-view>
+    </div>
+  </div>
+  
+  <!-- Vue Pages -->
+  <script src='pages/home.js'></script>
+  <script src='pages/upload.js'></script>
+  <script src='pages/library.js'></script>
+  <script src='pages/player.js'></script>
+  <script src='pages/register.js'></script>
+  <script src='pages/login.js'></script>
+  
+  <!-- Vue Components 
+  <script src='components/forms/login.js'></script>
+  -->
+
+  <!-- Main -->
+  <script src='app.js'></script>
+</body>
+</html>
