@@ -2,42 +2,52 @@ const shortid = require('short-id')
 const IPFS = require('ipfs-api');
 const ipfs = IPFS({
   host: 'ipfs.infura.io',
-  port: 5001,protocol: 'https'
+  port: 5001,
+  protocol: 'https'
 });
 
 function routes(app, dbe, lms, accounts){
-    let db = dbe.collection('music-users')
-    let music = dbe.collection('music-store')
-    app.post('/register', (req,res)=>{
-        let email = req.body.email
-        let idd = shortid.generate()
-        if(email){
-            db.findOne({email}, (err, doc)=>{
-                if(doc){
-                    res.status(400).json({"status":"Failed", "reason":"Already registered"})
-                }else{
-                    db.insertOne({email})
-                    res.json({"status":"success","id":idd})
-                }
-            })
+  let users = dbe.collection('music-users');
+  let music = dbe.collection('music-store');
+
+  // POST /register
+  // Requirements: email
+  app.post('/register', (req, res)=>{
+    let email = req.body.email
+    let id = shortid.generate()
+    if(email){
+      users.findOne({email}, (err, doc)=>{
+        if(doc){
+          res.json({status: false, 'reason': 'Already registered'})
         }else{
-            res.status(400).json({"status":"Failed", "reason":"wrong input"})
+          const user = {email, id}
+          users.insertOne(user)
+          res.json({status: true, user})
         }
-    })
-    app.post('/login', (req,res)=>{
-        let email = req.body.email
-        if(email){
-            db.findOne({email}, (err, doc)=>{
-                if(doc){
-                    res.json({"status":"success","id":doc.id})
-                }else{
-                    res.status(400).json({"status":"Failed", "reason":"Not recognised"})
-                }
-            })
+      })
+    }else{
+      res.status(400).json({status: false, 'reason': 'wrong input'})
+    }
+  })
+
+  // POST /login
+  // Requirements: email
+  app.post('/login', (req,res)=>{
+    let email = req.body.email
+    if(email){
+      users.findOne({email}, (err, user)=>{
+        if(user){
+          res.json({status: true, user})
         }else{
-            res.status(400).json({"status":"Failed", "reason":"wrong input"})
+          res.json({status: false, 'reason': 'Not recognised'})
         }
-    })
+      })
+    }else{
+      res.status(400).json({status: false, 'reason': 'wrong input'})
+    }
+  })
+    // POST /upload
+    // Requirements: name, title of music, music file buffer or URL stored
     app.post('/upload', async (req,res)=>{
         let buffer = req.body.buffer
         let name = req.body.name
@@ -49,43 +59,71 @@ function routes(app, dbe, lms, accounts){
             lms.sendIPFS(id, hash, {from: accounts[0]})
             .then((_hash, _address)=>{
                 music.insertOne({id,hash, title,name})
-                res.json({"status":"success", id})
+                res.json({
+                  status: true,
+                  id
+                })
             })
             .catch(err=>{
-                res.status(500).json({"status":"Failed", "reason":"Upload error occured"})
+                res.status(500).json({
+                  status: false,
+                  'reason': 'Upload error occured'
+                })
             })
         }else{
-            res.status(400).json({"status":"Failed", "reason":"wrong input"})
+            res.status(400).json({
+              status: false,
+              'reason': 'wrong input'
+            })
         }
     })
+    // GET /access/{email}
+    // Requirements: email
     app.get('/access/:email', (req,res)=>{
         if(req.params.email){
-            db.findOne({email: req.body.email}, (err,doc)=>{
+            users.findOne({email: req.body.email}, (err,doc)=>{
                 if(doc){
                     let data = music.find().toArray()
-                    res.json({"status":"success", data})
+                    res.json({
+                      status: true,
+                      data
+                    })
                 }
             })
         }else{
-            res.status(400).json({"status":"Failed", "reason":"wrong input"})
+            res.status(400).json({
+              status: false,
+              'reason': 'wrong input'
+            })
         }
     })
+    // GET /access/{email}/{id}
+    // Requirements: email, id
     app.get('/access/:email/:id', (req,res)=>{
       let id = req.params.id
         if(req.params.id && req.params.email){
-            db.findOne({email:req.body.email},(err,doc)=>{
+            users.findOne({email:req.body.email},(err,doc)=>{
                 if(doc){
                     lms.getHash(id, {from: accounts[0]})
                     .then(async(hash)=>{
                         let data = await ipfs.files.get(hash)
-                        res.json({"status":"success", data: data.content})
+                        res.json({
+                          status: true,
+                          data: data.content
+                        })
                     })
                 }else{
-                    res.status(400).json({"status":"Failed", "reason":"wrong input"})
+                    res.status(400).json({
+                      status: false,
+                      'reason': 'wrong input'
+                    })
                 }
             })
         }else{
-            res.status(400).json({"status":"Failed", "reason":"wrong input"})
+            res.status(400).json({
+              status: false,
+              'reason': 'wrong input'
+            })
         }
     })
 }

@@ -1,0 +1,9 @@
+nav a.router-link-exact-active {
+  color: black !important;
+  border-bottom: 1px solid;
+}
+form {
+  text-align: left;
+  max-width: 350px;
+  margin: 0 auto;
+}

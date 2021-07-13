@@ -1,11 +1,11 @@
 // Routes
 const routes = [
-  { path: '/', component: Home },
-  { path: '/upload', component: Upload },
-  { path: '/library', component: Library },
-  { path: '/player', component: Player },
-  { path: '/register', component: Register },
-  { path: '/login', component: Login },
+  {path: '/', component: Home},
+  {path: '/upload', component: Upload},
+  {path: '/library', component: Library},
+  {path: '/player', component: Player},
+  {path: '/register', component: Register},
+  {path: '/login', component: Login},
 ];
 
 const router = new VueRouter({
@@ -16,18 +16,16 @@ const router = new VueRouter({
 // Store
 const store = new Vuex.Store({
   state: {
-    count: 0
+    user: null
   },
   mutations: {
-    increment (state) {
-      state.count++
-    }
+    auth(state, user) {state.user = user}
   }
-})
+});
 
 // Vue Instance
 const app = new Vue({
   el: '#app',
   router,
   store
-})
+});

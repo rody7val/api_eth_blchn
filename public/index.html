@@ -6,40 +6,50 @@
     rel='stylesheet'
     href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css'
   >
+  <link rel='stylesheet' href='styles/main.css'>
   <script src='https://cdn.jsdelivr.net/npm/vue'></script>
   <script src='https://unpkg.com/vue-router'></script>
   <script src='https://unpkg.com/vuex@3.6.2/dist/vuex.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'></script>
   <script src='utils.js'></script>
 </head>
 <body>
   <div id='app' class='container' style='margin-top: 20px; max-width: 600px;'>
-  	<!--
-      {{$store.state.count}}
-      <button @click='$store.commit("increment")'>add</button>
-    -->
     <nav class='navbar navbar-expand navbar-light' style='background-color: #7bd8ff;'>
+      <!-- Nav Links -->
       <ul class='navbar-nav mr-auto mt-2 mt-lg-0'>
-        <li v-for='(link, key) in navLinks'>
+        <li>
+          <router-link class='nav-link' to='/'>Home</router-link>
+        </li>
+        <li v-if='$store.state.user' v-for='(link, key) in navLinks'>
           <router-link class='nav-link' :to='link.to' :key='key'>
             {{link.label}}
           </router-link>
         </li>
       </ul>
-
+      <!-- User Links -->
         <ul class='navbar-nav ml-auto mt-2 mt-lg-0'>
-          <li v-for='(link, key) in userLinks'>
+          <li v-if='$store.state.user'>
+            <div class='nav-link active'>{{$store.state.user.email}}</div>
+          </li>
+          <li v-if='$store.state.user' @click='$store.commit("auth", null)'>
+            <div class='nav-link' style='cursor: pointer'>Quit</div>
+          </li>
+          <li v-else v-for='(link, key) in userLinks'>
             <router-link class='nav-link' :to='link.to' :key='key'>
               {{link.label}}
             </router-link>
           </li>
         </ul>
     </nav>
-  
+    <!-- Router Viewer -->
     <div class='text-center' style='margin-top: 20px;'>
       <router-view></router-view>
     </div>
   </div>
-  
+  <!-- Vue Components -->
+  <script src='components/loginForm.js'></script>
+  <script src='components/signupForm.js'></script>
   <!-- Vue Pages -->
   <script src='pages/home.js'></script>
   <script src='pages/upload.js'></script>
@@ -48,10 +58,6 @@
   <script src='pages/register.js'></script>
   <script src='pages/login.js'></script>
   
-  <!-- Vue Components 
-  <script src='components/forms/login.js'></script>
-  -->
-
   <!-- Main -->
   <script src='app.js'></script>
 </body>

@@ -1,3 +1,8 @@
 var Home = {
-	template: "<div><h1>Home</h1><p>This is home page</p></div>"
+  template: `
+    <div>
+      <h1>Home</h1>
+      <p>Upload and play your music</p>
+    </div>
+  `
 };
