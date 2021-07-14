@@ -16,15 +16,18 @@ const router = new VueRouter({
 // Store
 const store = new Vuex.Store({
   state: {
-    user: null
+    user: null,
+    alert: null
   },
   mutations: {
-    auth(state, user) {state.user = user}
+    auth(state, user) {state.user = user},
+    alert(state, alert) {state.alert = alert}
   }
 });
 
 // Vue Instance
 const app = new Vue({
+  components: {alert},
   el: '#app',
   router,
   store

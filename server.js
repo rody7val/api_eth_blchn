@@ -1,5 +1,4 @@
 require('dotenv').config()
-
 const path = require("path")
 const express = require('express')
 const app = express()
@@ -8,19 +7,18 @@ const Web3 = require('web3')
 const mongodb = require('mongodb').MongoClient
 const contract = require('truffle-contract')
 const artifacts = require('./build/Inbox.json')
-
+// public folder
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json())
-
+// connection to contracts in nodes ethereum
 if (typeof web3 !== 'undefined') {
-    var web3 = new Web3(web3.currentProvider)
-  } else {
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
+  var web3 = new Web3(web3.currentProvider)
+} else {
+  var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
 }
-
 const LMS = contract(artifacts)
 LMS.setProvider(web3.currentProvider)
-
+// data base
 mongodb.connect(process.env.DB, {useUnifiedTopology: true}, async(err,client) => {
   if (err) return console.error(err.message)
 

@@ -18,9 +18,11 @@ const loginForm = {
           this.$store.commit("auth", response.data.user)
           this.$router.push('/')
         }else{
+          this.$store.commit('alert', {type: 'danger', message: response.data.reason})
           console.log(response.data.reason);
         }
       } catch (error) {
+        this.$store.commit('alert', {type: 'danger', message: error})
         console.error(error);
       }
     },
@@ -33,9 +35,11 @@ const loginForm = {
         <input
           id="email"
           v-model='user.email'
-          placeholder='email'
+          placeholder='your@email.com'
           class='form-control'
-          type='email'>
+          type='email'
+          required
+        >
         </input>
       </div>
 
