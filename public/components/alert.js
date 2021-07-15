@@ -5,7 +5,7 @@ const alert = {
   },
   methods: {
     closeAlert() {
-      this.$store.commit("alert", null)
+      this.$store.commit("setAlert", null)
     },
   },
 

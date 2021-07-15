@@ -11,18 +11,17 @@ const loginForm = {
 
   methods: {
     async login() {
-      try {
+      try {// consume data
         const response = await axios.post('/login', {email: this.user.email});
-        if(response.data.status){
-          //logined
-          this.$store.commit("auth", response.data.user)
+        if(response.data.status){// able
+          this.$store.commit("setAuth", response.data.user)
           this.$router.push('/')
-        }else{
-          this.$store.commit('alert', {type: 'danger', message: response.data.reason})
+        }else{// notify
+          this.$store.commit('setAlert', {type: 'danger', message: response.data.reason})
           console.log(response.data.reason);
         }
-      } catch (error) {
-        this.$store.commit('alert', {type: 'danger', message: error})
+      } catch (error) {// notify
+        this.$store.commit('setAlert', {type: 'danger', message: error})
         console.error(error);
       }
     },
@@ -43,7 +42,7 @@ const loginForm = {
         </input>
       </div>
 
-      <button type="submit" class="btn btn-primary">Login</button>
-    </form> 
+      <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
   `
 }

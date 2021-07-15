@@ -1,10 +1,15 @@
-const navLinks = [
+const authLinks = [
+  {label: "Register", to: "register"},
+  {label: "Login", to: "login"},
+];
+
+const userLinks = [
   {label: "Library", to: "library"},
   {label: "Player", to: "player"},
   {label: "Upload", to: "upload"},
 ];
 
-const userLinks = [
-  {label: "Register", to: "register"},
-  {label: "Login", to: "login"},
+const dappLinks = [
+  {label: "Home", to: "/"},
+  {label: "404", to: "route_not_found"},
 ];

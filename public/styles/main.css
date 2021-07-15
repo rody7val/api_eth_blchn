@@ -4,10 +4,10 @@ nav a.router-link-exact-active {
 }
 form {
   text-align: left;
-  max-width: 350px;
+  max-width: 250px;
   margin: 0 auto;
 }
 .alert {
-	max-width: 350px;
+	max-width: 250px;
 	margin: 0 auto;
 }

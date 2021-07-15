@@ -10,7 +10,7 @@ const artifacts = require('./build/Inbox.json')
 // public folder
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json())
-// connection to contracts in nodes ethereum
+// contracts
 if (typeof web3 !== 'undefined') {
   var web3 = new Web3(web3.currentProvider)
 } else {
@@ -29,7 +29,7 @@ mongodb.connect(process.env.DB, {useUnifiedTopology: true}, async(err,client) =>
   //const lms = LMS.at(contract_address) for remote nodes deployed on ropsten or rinkeby
 
   routes(app, db, lms, accounts)
-  
+
   app.listen(port, () => {
     console.log(`listening on port ${port}`)
   })
