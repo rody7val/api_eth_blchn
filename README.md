@@ -1,11 +1,17 @@
 # eth-blchn
 ### Dependences:
-- node.js
-- mongodb
+- [node.js](https://nodejs.org/)
+- [mongodb](https://docs.mongodb.com/guides/server/install/)
 - Ganache CLI
-- Truffle Suite
+  ```
+  npm install ganache-cli -g
+  ```
+- Truffle 
+  ```
+  npm install truffle -g
+  ```
 ### Getting started:
-Run emulator blockchain node ethereum:
+Run local ethereum:
 ```
 ganache-cli
 ```
