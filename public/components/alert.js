@@ -3,6 +3,7 @@ const alert = {
     message: {type: String},
     type: {type: String}
   },
+
   methods: {
     closeAlert() {
       this.$store.commit("setAlert", null)

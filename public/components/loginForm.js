@@ -14,7 +14,8 @@ const loginForm = {
       try {// consume data
         const response = await axios.post('/login', {email: this.user.email});
         if(response.data.status){// able
-          this.$store.commit("setAuth", response.data.user)
+          this.$store.commit('setAuth', response.data.user)
+          localStorage.setItem('session', response.data.user.email)
           this.$router.push('/')
         }else{// notify
           this.$store.commit('setAlert', {type: 'danger', message: response.data.reason})

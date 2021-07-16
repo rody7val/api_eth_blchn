@@ -36,7 +36,7 @@
         :class="'dropdown '+ getDropdownStyle"
         @click="handleDropdown(!$store.state.dropdown)"
       >
-        <button class="btn btn-secondary dropdown-toggle btn-sm">
+        <button class="btn btn-primary dropdown-toggle btn-sm">
           {{$store.state.user.email}}
         </button>
         <div :class="'dropdown-menu '+ getDropdownStyle">
@@ -57,6 +57,13 @@
         </div>
       </div>
     </nav>
+    <!-- Notify -->
+    <alert
+      v-if="$store.state.alert"
+      :message="$store.state.alert.message"
+      :type="$store.state.alert.type"
+      style="margin-top: 20px"
+    ></alert>
     <!-- Router Viewer -->
     <div class='text-center' style='margin-top: 20px;'>
       <router-view></router-view>

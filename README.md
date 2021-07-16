@@ -5,7 +5,7 @@
 - Ganache CLI
 - Truffle Suite
 ### Getting started:
-Run local ethereum:
+Run emulator blockchain node ethereum:
 ```
 ganache-cli
 ```
