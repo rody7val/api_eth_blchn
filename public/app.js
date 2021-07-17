@@ -55,7 +55,6 @@ const app = new Vue({
   async mounted() {
     const session = localStorage.getItem('session')
     if (session){
-      console.log(session)
       try {// consume data
         const response = await axios.post('/login', {email: session});
         if(response.data.status){// able

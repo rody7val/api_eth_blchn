@@ -18,7 +18,7 @@ function routes(app, dbe, lms, accounts){
     if(email){
       users.findOne({email}, (err, doc)=>{
         if(doc){
-          res.json({status: false, 'reason': 'Already registered'})
+          res.json({status: false, reason: 'Already registered'})
         }else{
           const user = {email, id}
           users.insertOne(user)
@@ -26,57 +26,59 @@ function routes(app, dbe, lms, accounts){
         }
       })
     }else{
-      res.status(400).json({status: false, 'reason': 'wrong input'})
+      res.status(400).json({status: false, reason: 'wrong input'})
     }
   })
 
   // POST /login
   // Requirements: email
-  app.post('/login', (req,res)=>{
+  app.post('/login', (req, res)=>{
     let email = req.body.email
     if(email){
       users.findOne({email}, (err, user)=>{
         if(user){
           res.json({status: true, user})
         }else{
-          res.json({status: false, 'reason': 'Not recognised'})
+          res.json({status: false, reason: 'Not recognised'})
         }
       })
     }else{
-      res.status(400).json({status: false, 'reason': 'wrong input'})
+      res.status(400).json({status: false, reason: 'wrong input'})
     }
   })
-    // POST /upload
-    // Requirements: name, title of music, music file buffer or URL stored
-    app.post('/upload', async (req,res)=>{
-        let buffer = req.body.buffer
-        let name = req.body.name
-        let title = req.body.title
-        let id = shortid.generate() + shortid.generate()
-        if(buffer && title){
-            let ipfsHash = await ipfs.add(buffer)
-            let hash = ipfsHash[0].hash
-            lms.sendIPFS(id, hash, {from: accounts[0]})
-            .then((_hash, _address)=>{
-                music.insertOne({id,hash, title,name})
-                res.json({
-                  status: true,
-                  id
-                })
-            })
-            .catch(err=>{
-                res.status(500).json({
-                  status: false,
-                  'reason': 'Upload error occured'
-                })
-            })
-        }else{
-            res.status(400).json({
-              status: false,
-              'reason': 'wrong input'
-            })
-        }
-    })
+  // POST /upload
+  // Requirements: name, title of music, music file buffer or URL stored
+  app.post('/upload', async (req, res)=>{
+    let buffer = req.body.buffer
+    let name = req.body.name
+    let title = req.body.title
+    let user = req.body.user
+    let id = shortid.generate() + shortid.generate()
+    if(buffer && name && title && user){
+      console.log(buffer)
+      let ipfsHash = await ipfs.add(buffer)
+      let hash = ipfsHash[0].hash
+      lms.sendIPFS(id, hash, {from: accounts[0]})
+      .then((_hash, _address)=>{
+        music.insertOne({id, hash, title, name})
+        res.json({
+          status: true,
+          id
+        })
+      })
+      .catch(err=>{
+        res.json({
+          status: false,
+          reason: 'Upload error occured'
+        })
+      })
+    }else{
+      res.json({
+        status: false,
+        reason: 'wrong input'
+      })
+    }
+  })
     // GET /access/{email}
     // Requirements: email
     app.get('/access/:email', (req,res)=>{
@@ -93,7 +95,7 @@ function routes(app, dbe, lms, accounts){
         }else{
             res.status(400).json({
               status: false,
-              'reason': 'wrong input'
+              reason: 'wrong input'
             })
         }
     })
@@ -115,14 +117,14 @@ function routes(app, dbe, lms, accounts){
                 }else{
                     res.status(400).json({
                       status: false,
-                      'reason': 'wrong input'
+                      reason: 'wrong input'
                     })
                 }
             })
         }else{
             res.status(400).json({
               status: false,
-              'reason': 'wrong input'
+              reason: 'wrong input'
             })
         }
     })

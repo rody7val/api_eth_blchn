@@ -1,7 +1,7 @@
 # eth-blchn
 ### Dependences:
 - [node.js](https://nodejs.org/)
-- [mongodb](https://docs.mongodb.com/guides/server/install/)
+- [mongodb](https://docs.mongodb.com/manual/installation/)
 - Ganache CLI
   ```
   npm install ganache-cli -g
@@ -18,8 +18,8 @@ ganache-cli
 In another shell:
 ```
 git clone https://github.com/rody7val/api_eth_blchn
-npm install
 cd api_eth_blchn
+npm install
 truffle init
 truffle compile
 truffle migrate
