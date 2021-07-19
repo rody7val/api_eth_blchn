@@ -1,15 +1,14 @@
 const authLinks = [
-  {label: "Register", to: "register"},
-  {label: "Login", to: "login"},
+  {label: "Register", to: "/register"},
+  {label: "Login", to: "/login"},
 ];
 
 const userLinks = [
-  {label: "Library", to: "library"},
-  {label: "Player", to: "player"},
-  {label: "Upload", to: "upload"},
+  {label: "Library", to: "/library"},
+  {label: "Upload", to: "/upload"},
 ];
 
 const dappLinks = [
   {label: "Home", to: "/"},
-  {label: "404", to: "route_not_found"},
+  {label: "404", to: "/route_not_found"},
 ];

@@ -17,13 +17,14 @@ const routes = [
   {path: '/', component: Home},
   {path: '/upload', component: Upload, meta: { requiresAuth: true }},
   {path: '/library', component: Library, meta: { requiresAuth: true }},
-  {path: '/player', component: Player, meta: { requiresAuth: true }},
+  //{path: '/player/:id', component: PlayerId, meta: { requiresAuth: true }},
   {path: '/register', component: Register},
   {path: '/login', component: Login},
   {path: '*', component: _404}
 ];
 
 const router = new VueRouter({
+  mode: "history",
   scrollBehavior: () => ({ x: 0, y: 0 }),
   routes: routes,
   base: '/'

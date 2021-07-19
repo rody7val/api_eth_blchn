@@ -1,15 +1,21 @@
 require('dotenv').config()
-const path = require("path")
+const path = require('path')
+const cors = require('cors')
 const express = require('express')
+const bodyParser = require('body-parser')
 const app = express()
 const routes = require('./routes')
 const Web3 = require('web3')
 const mongodb = require('mongodb').MongoClient
 const contract = require('truffle-contract')
 const artifacts = require('./build/Inbox.json')
+// parse application x-www-form-urlencoded and json
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+app.use(cors())
 // public folder
 app.use(express.static(path.join(__dirname, 'public')))
-app.use(express.json())
+//app.use(express.json())
 // contracts
 if (typeof web3 !== 'undefined') {
   var web3 = new Web3(web3.currentProvider)

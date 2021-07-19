@@ -20,8 +20,6 @@ In another shell:
 git clone https://github.com/rody7val/api_eth_blchn
 cd api_eth_blchn
 npm install
-truffle init
-truffle compile
 truffle migrate
 npm run build
 ```

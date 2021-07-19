@@ -1,14 +1,17 @@
+const multer = require("multer")
+const streamifier = require('streamifier')
+//const fs = require('fs')
 const shortid = require('short-id')
-const IPFS = require('ipfs-api');
+const IPFS = require('ipfs-api')
 const ipfs = IPFS({
   host: 'ipfs.infura.io',
   port: 5001,
   protocol: 'https'
-});
+})
 
 function routes(app, dbe, lms, accounts){
-  let users = dbe.collection('music-users');
-  let music = dbe.collection('music-store');
+  let users = dbe.collection('music-users')
+  let music = dbe.collection('music-store')
 
   // POST /register
   // Requirements: email
@@ -46,39 +49,70 @@ function routes(app, dbe, lms, accounts){
       res.status(400).json({status: false, reason: 'wrong input'})
     }
   })
+
   // POST /upload
-  // Requirements: name, title of music, music file buffer or URL stored
-  app.post('/upload', async (req, res)=>{
-    let buffer = req.body.buffer
-    let name = req.body.name
-    let title = req.body.title
-    let user = req.body.user
-    let id = shortid.generate() + shortid.generate()
-    if(buffer && name && title && user){
-      console.log(buffer)
-      let ipfsHash = await ipfs.add(buffer)
-      let hash = ipfsHash[0].hash
-      lms.sendIPFS(id, hash, {from: accounts[0]})
+  // Requirements: music file buffer or URL stored
+  app.post('/upload', multer().array('fileUploaded'), async (req, res)=>{
+    const file = req.files[0]//no multiple files
+    const stream = streamifier.createReadStream(file.buffer)
+    //const stream = fs.createReadStream(file.buffer)
+    console.log(stream)
+    if(stream && req.body.user){
+      let ipfsHash = await ipfs.add(stream)// storage set
+      file.hash = ipfsHash[0].hash
+      file.id = shortid.generate() + shortid.generate()
+      file.user = req.body.user
+      lms.sendIPFS(file.id, file.hash, {from: accounts[0]})
       .then((_hash, _address)=>{
-        music.insertOne({id, hash, title, name})
-        res.json({
-          status: true,
-          id
-        })
+        delete file.buffer
+        console.log(file)
+        music.insertOne(file)// database set
+        res.json({status: true, file})
       })
       .catch(err=>{
-        res.json({
-          status: false,
-          reason: 'Upload error occured'
-        })
+        res.json({ status: false, reason: 'Upload error occured'})
       })
     }else{
-      res.json({
-        status: false,
-        reason: 'wrong input'
-      })
+      res.json({status: false, reason: 'Wrong input'})
     }
   })
+
+  // GET /access/{email}/{id}
+  // Requirements: email, id
+  app.get('/access/:email/:id', (req,res)=>{
+    let id = req.params.id
+    let email = req.params.email
+    if(id && email){
+      users.findOne({email},(err,doc)=>{// db get
+        if(!err){
+          lms.getHash(id, {from: accounts[0]})
+          .then(async(hash)=>{
+            let data = await ipfs.files.get(hash)// storage get
+            const stream = streamifier.createReadStream(data[0].content)
+            console.log(doc)
+            res.set('content-type', doc.mimetype)
+            res.set('accept-ranges', 'bytes')
+            stream.on('data', chunk => {
+              res.write(chunk)
+              console.log(chunk)
+            })
+            stream.on('end', chunk => {
+              res.end()
+            })
+            //res.json({status: true, buffer: data[0].content})
+          })
+          .catch(err=>{
+            res.json({ status: false, reason: 'Download error occured'})
+          })
+        }else{
+          res.json({status: false, reason: 'Wrong input'})
+        }
+      })
+    }else{
+      res.json({status: false, reason: 'Wrong input'})
+    }
+  })
+
     // GET /access/{email}
     // Requirements: email
     app.get('/access/:email', (req,res)=>{
@@ -89,35 +123,6 @@ function routes(app, dbe, lms, accounts){
                     res.json({
                       status: true,
                       data
-                    })
-                }
-            })
-        }else{
-            res.status(400).json({
-              status: false,
-              reason: 'wrong input'
-            })
-        }
-    })
-    // GET /access/{email}/{id}
-    // Requirements: email, id
-    app.get('/access/:email/:id', (req,res)=>{
-      let id = req.params.id
-        if(req.params.id && req.params.email){
-            users.findOne({email:req.body.email},(err,doc)=>{
-                if(doc){
-                    lms.getHash(id, {from: accounts[0]})
-                    .then(async(hash)=>{
-                        let data = await ipfs.files.get(hash)
-                        res.json({
-                          status: true,
-                          data: data.content
-                        })
-                    })
-                }else{
-                    res.status(400).json({
-                      status: false,
-                      reason: 'wrong input'
                     })
                 }
             })
