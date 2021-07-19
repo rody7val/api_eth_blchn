@@ -15,7 +15,6 @@ app.use(bodyParser.json())
 app.use(cors())
 // public folder
 app.use(express.static(path.join(__dirname, 'public')))
-//app.use(express.json())
 // contracts
 if (typeof web3 !== 'undefined') {
   var web3 = new Web3(web3.currentProvider)

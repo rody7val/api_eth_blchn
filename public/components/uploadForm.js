@@ -67,6 +67,15 @@ const uploadForm = {
         >
         </input>
       </div>
+
+      <div v-if="files" class='form-group'>
+        <ul>
+          <li v-for="file in files">
+            {{file.name}}<b>{{Number((file.size/1024)/1024).toFixed(1)}}MB</b>
+          </li>
+        </ul>
+      </div>
+
       <div class='form-group'>
         <button v-if='!loading' type='submit' class='btn btn-primary btn-block'>
           Upload
@@ -77,10 +86,12 @@ const uploadForm = {
       </div>
     </form>
 
-    <div style="max-width: 250px; margin: 0 auto;" v-else>
-      <button
-        @click="$router.push(getRoutePlayer)"
-        class="btn btn-success btn-block">Play</button>
+    <div style="max-width: 350px; margin: 0 auto;" v-else>
+      <a
+        :href="getRoutePlayer"
+        target="_blank"
+        class="btn btn-success btn-block"
+      >Play</a>
       <button
         class="btn btn-secondary btn-block"
         @click='reset()'
