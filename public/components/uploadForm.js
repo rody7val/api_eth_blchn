@@ -55,7 +55,7 @@ const uploadForm = {
   template: `
   <div>
     <form name='file' @submit.prevent='upload' v-if='!fileUploaded'>
-      <div class='form-group'>
+      <div class='form-group text-left'>
         <label for='buffer'>File</label>
         <input
           id='buffer'
@@ -68,15 +68,15 @@ const uploadForm = {
         </input>
       </div>
 
-      <div v-if="files" class='form-group'>
+      <div v-if="files" class='form-group text-left'>
         <ul>
           <li v-for="file in files">
-            {{file.name}}<b>{{Number((file.size/1024)/1024).toFixed(1)}}MB</b>
+            {{file.name}} <br/> <b>{{Number((file.size/1024)/1024).toFixed(1)}}MB</b>
           </li>
         </ul>
       </div>
 
-      <div class='form-group'>
+      <div class='form-group text-left'>
         <button v-if='!loading' type='submit' class='btn btn-primary btn-block'>
           Upload
         </button>
@@ -86,7 +86,7 @@ const uploadForm = {
       </div>
     </form>
 
-    <div style="max-width: 350px; margin: 0 auto;" v-else>
+    <div class="uploadSuccess" v-else>
       <a
         :href="getRoutePlayer"
         target="_blank"

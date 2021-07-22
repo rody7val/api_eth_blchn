@@ -30,7 +30,7 @@ const loginForm = {
 
   template: `
     <form @submit.prevent="login">
-      <div class="form-group">
+      <div class="form-group text-left">
         <label for="email">Email</label>
         <input
           id="email"

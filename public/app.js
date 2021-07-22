@@ -3,11 +3,13 @@ const store = new Vuex.Store({
   state: {
     user: null,
     alert: null,
-    dropdown: false
+    items: null,
+    dropdown: false,
   },
   mutations: {
     setAuth(state, user) {state.user = user},
     setAlert(state, alert) {state.alert = alert},
+    setItems(state, items) {state.items = items},
     setDropdown(state, dropdown) {state.dropdown = dropdown},
   }
 });

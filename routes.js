@@ -29,7 +29,7 @@ function routes(app, dbe, lms, accounts){
         }
       })
     }else{
-      res.status(400).json({status: false, reason: 'wrong input'})
+      res.json({status: false, reason: 'wrong input'})
     }
   })
 
@@ -46,7 +46,7 @@ function routes(app, dbe, lms, accounts){
         }
       })
     }else{
-      res.status(400).json({status: false, reason: 'wrong input'})
+      res.json({status: false, reason: 'wrong input'})
     }
   })
 
@@ -89,7 +89,7 @@ function routes(app, dbe, lms, accounts){
           .then(async(hash)=>{
             let data = await ipfs.files.get(hash)// storage get
             const stream = streamifier.createReadStream(data[0].content)
-            console.log(doc)
+            //console.log(doc)
             res.set('content-type', doc.mimetype)
             res.set('accept-ranges', 'bytes')
             stream.on('data', chunk => {
@@ -113,26 +113,26 @@ function routes(app, dbe, lms, accounts){
     }
   })
 
-    // GET /access/{email}
-    // Requirements: email
-    app.get('/access/:email', (req,res)=>{
-        if(req.params.email){
-            users.findOne({email: req.body.email}, (err,doc)=>{
-                if(doc){
-                    let data = music.find().toArray()
-                    res.json({
-                      status: true,
-                      data
-                    })
-                }
-            })
-        }else{
-            res.status(400).json({
-              status: false,
-              reason: 'wrong input'
-            })
+  // GET /access/{email}
+  // Requirements: email
+  app.get('/access/:email', (req,res)=>{
+    let email = req.params.email
+    if(email){
+      users.findOne({email}, (err,doc)=>{
+        if(doc){
+          music.find().toArray((err, items)=>{
+            if(err){
+              res.json({status: false, reason: 'No documents found'})
+            }else{
+              res.json({status: true, items})
+            }
+          })
         }
-    })
+      })
+    }else{
+      res.json({status: false, reason: 'wrong input'})
+    }
+  })
 }
 
 module.exports = routes
