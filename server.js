@@ -1,14 +1,16 @@
 require('dotenv').config()
-const path = require('path')
-const cors = require('cors')
-const express = require('express')
 const bodyParser = require('body-parser')
-const app = express()
-const routes = require('./routes')
+const express = require('express')
+const https = require('https')
+const cors = require('cors')
+const path = require('path')
 const Web3 = require('web3')
+const fs = require('fs')
+const app = express()
 const mongodb = require('mongodb').MongoClient
-const contract = require('truffle-contract')
 const artifacts = require('./build/Inbox.json')
+const contract = require('truffle-contract')
+const routes = require('./routes')
 // parse application x-www-form-urlencoded and json
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -24,18 +26,30 @@ if (typeof web3 !== 'undefined') {
 const LMS = contract(artifacts)
 LMS.setProvider(web3.currentProvider)
 // data base
-mongodb.connect(process.env.DB, {useUnifiedTopology: true}, async(err,client) => {
-  if (err) return console.error(err.message)
-
+mongodb.connect(process.env.DB || 'mongodb://localhost:27017/mydb', {useUnifiedTopology: true}, async(err,client) => {
+  if (err) {
+    return console.error(err.message)
+  }
   const port = process.env.PORT || 8082
-  const db = client.db(process.env.CLUSTER_NAME)
+  const db = client.db(process.env.CLUSTER_NAME || 'Cluster01')
   const accounts = await web3.eth.getAccounts()
   const lms = await LMS.deployed()
   //const lms = LMS.at(contract_address) for remote nodes deployed on ropsten or rinkeby
 
+  //run app
   routes(app, db, lms, accounts)
-
-  app.listen(port, () => {
-    console.log(`listening on port ${port}`)
+  const server = app.listen(port, () => {
+    console.log(`Listening on port ${port}`)
   })
+  //https
+  const options = {
+    key: fs.readFileSync(process.env.KEY_FILE || null).toString(),
+    cert: fs.readFileSync(process.env.CERT_FILE || null).toString()
+  }
+  const serverSecure = https.createServer(options, app)
+  serverSecure.listen(8443, () => {
+    console.log(`And listening server secure on port ${8443}`)
+  })
+  
 })
+

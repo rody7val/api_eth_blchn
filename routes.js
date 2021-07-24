@@ -1,5 +1,4 @@
 const multer = require("multer")
-const streamifier = require('streamifier')
 const shortid = require('short-id')
 const IPFS = require('ipfs-http-client')
 const { Readable } = require('stream')
@@ -43,6 +42,7 @@ function routes(app, db, lms, accounts){
           res.json({status: true, user})
         }else{
           res.json({status: false, reason: 'Not recognised'})
+
         }
       })
     }else{
@@ -53,7 +53,7 @@ function routes(app, db, lms, accounts){
   // POST /upload
   // Requirements: music file buffer or URL stored
   app.post('/upload',
-    multer({
+    multer({//middleware
       storage: multer.memoryStorage(),
       limits: {
         fields: 1,
@@ -64,7 +64,6 @@ function routes(app, db, lms, accounts){
     }).single('fileUploaded'),
     async (req, res)=>{
       let file = req.file//no multiple files
-      //console.log(file)
       if(file && req.body.user){
         const readableStream = new Readable()
         readableStream.push(file.buffer)
