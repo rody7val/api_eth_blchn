@@ -1,5 +1,4 @@
 const loginForm = {
-
   data() {
     return {
       user: {
@@ -23,7 +22,7 @@ const loginForm = {
         }
       } catch (error) {// notify
         this.$store.commit('setAlert', {type: 'danger', message: error})
-        console.error(error);
+        console.log(error);
       }
     },
   },

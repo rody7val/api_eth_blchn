@@ -26,7 +26,7 @@ const routes = [
 ];
 
 const router = new VueRouter({
-  //mode: "history",
+  //mode: 'history',
   scrollBehavior: () => ({ x: 0, y: 0 }),
   routes: routes,
   base: '/'
@@ -69,7 +69,7 @@ const app = new Vue({
         }
       } catch (error) {// notify
         this.$store.commit('setAlert', {type: 'danger', message: error})
-        console.error(error);
+        console.log(error);
       }
     }
   },

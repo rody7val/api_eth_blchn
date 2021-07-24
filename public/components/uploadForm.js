@@ -1,5 +1,4 @@
 const uploadForm = {
-
   data(){
     return {
       loading: false,
@@ -20,7 +19,6 @@ const uploadForm = {
           headers: {'Content-Type': 'multipart/form-data'}
         })
         if(response.data.status){// able
-          console.log("able")
           this.fileUploaded = response.data.file
           this.files = null
           this.loading = false

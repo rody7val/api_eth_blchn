@@ -28,7 +28,7 @@ mongodb.connect(process.env.DB, {useUnifiedTopology: true}, async(err,client) =>
   if (err) return console.error(err.message)
 
   const port = process.env.PORT || 8082
-  const db = client.db('Cluster0')
+  const db = client.db(process.env.CLUSTER_NAME)
   const accounts = await web3.eth.getAccounts()
   const lms = await LMS.deployed()
   //const lms = LMS.at(contract_address) for remote nodes deployed on ropsten or rinkeby

@@ -1,17 +1,17 @@
 const multer = require("multer")
 const streamifier = require('streamifier')
-//const fs = require('fs')
 const shortid = require('short-id')
-const IPFS = require('ipfs-api')
-const ipfs = IPFS({
+const IPFS = require('ipfs-http-client')
+const { Readable } = require('stream')
+const ipfs = IPFS.create({
   host: 'ipfs.infura.io',
   port: 5001,
   protocol: 'https'
 })
 
-function routes(app, dbe, lms, accounts){
-  let users = dbe.collection('music-users')
-  let music = dbe.collection('music-store')
+function routes(app, db, lms, accounts){
+  let users = db.collection('music-users')
+  let music = db.collection('music-store')
 
   // POST /register
   // Requirements: email
@@ -52,29 +52,39 @@ function routes(app, dbe, lms, accounts){
 
   // POST /upload
   // Requirements: music file buffer or URL stored
-  app.post('/upload', multer().array('fileUploaded'), async (req, res)=>{
-    const file = req.files[0]//no multiple files
-    const stream = streamifier.createReadStream(file.buffer)
-    //const stream = fs.createReadStream(file.buffer)
-    console.log(stream)
-    if(stream && req.body.user){
-      let ipfsHash = await ipfs.add(stream)// storage set
-      file.hash = ipfsHash[0].hash
-      file.id = shortid.generate() + shortid.generate()
-      file.user = req.body.user
-      lms.sendIPFS(file.id, file.hash, {from: accounts[0]})
-      .then((_hash, _address)=>{
-        delete file.buffer
-        console.log(file)
-        music.insertOne(file)// database set
-        res.json({status: true, file})
-      })
-      .catch(err=>{
-        res.json({ status: false, reason: 'Upload error occured'})
-      })
-    }else{
-      res.json({status: false, reason: 'Wrong input'})
-    }
+  app.post('/upload',
+    multer({
+      storage: multer.memoryStorage(),
+      limits: {
+        fields: 1,
+        fieldSize: Math.pow(1000, 2), // limit size file 10MB
+        files: 1,
+        parts: 2
+      }
+    }).single('fileUploaded'),
+    async (req, res)=>{
+      let file = req.file//no multiple files
+      //console.log(file)
+      if(file && req.body.user){
+        const readableStream = new Readable()
+        readableStream.push(file.buffer)
+        readableStream.push(null)
+        const ipfsHash = await ipfs.add(readableStream)// storage set
+        file.hash = ipfsHash.cid.toString()
+        file.id = shortid.generate() + shortid.generate()
+        file.user = req.body.user
+        lms.sendIPFS(file.id, file.hash, {from: accounts[0]})
+        .then((_hash, _address)=>{
+          delete file.buffer
+          music.insertOne(file)// database set
+          res.json({status: true, file})
+        })
+        .catch(err=>{
+          res.json({ status: false, reason: err.message})
+        })
+      }else{
+        res.json({status: false, reason: 'Wrong input'})
+      }
   })
 
   // GET /access/{email}/{id}
@@ -87,22 +97,16 @@ function routes(app, dbe, lms, accounts){
         if(!err){
           lms.getHash(id, {from: accounts[0]})
           .then(async(hash)=>{
-            let data = await ipfs.files.get(hash)// storage get
-            const stream = streamifier.createReadStream(data[0].content)
-            //console.log(doc)
-            res.set('content-type', doc.mimetype)
-            res.set('accept-ranges', 'bytes')
-            stream.on('data', chunk => {
+            let stream = ipfs.cat(hash)// storage get
+            for await (const chunk of stream){
               res.write(chunk)
-              console.log(chunk)
-            })
-            stream.on('end', chunk => {
-              res.end()
-            })
-            //res.json({status: true, buffer: data[0].content})
+            }
+            res.end()
+            //res.set('content-type', 'audio/mpeg')
+            //res.set('accept-ranges', 'bytes')
           })
           .catch(err=>{
-            res.json({ status: false, reason: 'Download error occured'})
+            res.json({ status: false, reason: err.message})
           })
         }else{
           res.json({status: false, reason: 'Wrong input'})

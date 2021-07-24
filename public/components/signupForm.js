@@ -1,5 +1,4 @@
 const signupForm = {
-
   data() {
     return {
       user: {
