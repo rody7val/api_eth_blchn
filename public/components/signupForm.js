@@ -10,7 +10,7 @@ const signupForm = {
 
   methods: {
     async register() {
-      try {// consume data from vue dapp to mongodb using api blockchain ethereum
+      try {// consume data 
         const response = await axios.post('/register', {email: this.user.email});
         if(response.data.status){// able
           this.$store.commit('setAuth', response.data.user)

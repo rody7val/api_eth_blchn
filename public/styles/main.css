@@ -1,4 +1,8 @@
-nav a.router-link-exact-active {
+#app{
+  margin-top: 20px;
+  max-width: 600px;
+}
+nav .router-link-exact-active {
   color: black !important;
   border-bottom: 1px solid;
 }
@@ -10,6 +14,17 @@ nav a.router-link-exact-active {
   max-width: 250px;
   margin: 0 auto;
 }
-.items a:hover {
-  background-color: #7bd8ff;
+.section {
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  max-height: 0;
+}
+.section.collapsed {
+  max-height: 300px;
+  height: auto;
+}
+.ellipsis {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }

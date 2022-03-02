@@ -4,7 +4,7 @@ var _404 = {
       <h1>404</h1>
       <p>Page not found</p>
       <p>
-        <router-link to='/' class='nav-link'>Go to home</router-link>
+        <router-link to='/' class='nav-link'>Go home</router-link>
       </p>
     </div>
   `

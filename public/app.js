@@ -5,13 +5,23 @@ const store = new Vuex.Store({
     alert: null,
     items: null,
     dropdown: false,
+    collapse: null,
   },
   mutations: {
     setAuth(state, user) {state.user = user},
     setAlert(state, alert) {state.alert = alert},
     setItems(state, items) {state.items = items},
     setDropdown(state, dropdown) {state.dropdown = dropdown},
-  }
+    handleCollapse(state, id) {
+      if (state.collapse === id) {
+        state.collapse = null
+        document.getElementById(id).classList.toggle('collapsed')
+        return false
+      }
+      state.collapse = id
+      document.getElementById(id).classList.toggle('collapsed')
+    }
+  },
 });
 
 // Routes
@@ -19,7 +29,6 @@ const routes = [
   {path: '/', component: Home},
   {path: '/upload', component: Upload, meta: { requiresAuth: true }},
   {path: '/library', component: Library, meta: { requiresAuth: true }},
-  //{path: '/player/:id', component: PlayerId, meta: { requiresAuth: true }},
   {path: '/register', component: Register},
   {path: '/login', component: Login},
   {path: '*', component: _404}
@@ -36,7 +45,7 @@ router.beforeEach((to, from, next) => {// redirect if no login
   if (to.matched.some(record => record.meta.requiresAuth)){
     if (!store.state.user && !localStorage.getItem('session')){
       next({
-        path: '/',
+        path: '/login',
         query: { redirect: to.fullPath }
       })
     } else {
@@ -75,9 +84,29 @@ const app = new Vue({
   },
 
   computed: {
-    getDropdownStyle(){// to bootstrap class
+    // to bootstrap class
+    getDropdownStyle(){
       return this.$store.state.dropdown ? 'show' : ''
-    }
+    },
+    // links layout
+    authLinks() {
+      return [
+        {label: "Register", to: "/register"},
+        {label: "Login", to: "/login"},
+      ]
+    },
+    userLinks() {
+      return [
+        {label: "Library", to: "/library"},
+        {label: "Upload", to: "/upload"},
+      ]
+    },
+    dappLinks() {
+      return [
+        {label: "Home", to: "/"},
+        {label: "404", to: "/route_not_found"},
+      ]
+    },
   },
 
   methods: {

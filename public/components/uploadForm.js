@@ -94,6 +94,10 @@ const uploadForm = {
         class="btn btn-secondary btn-block"
         @click='reset()'
       >Upload another file</button>
+      <router-link
+        class="btn btn-info btn-block"
+        to='/library'
+      >List my library</router-link>
     </div>
 
   </div>`
